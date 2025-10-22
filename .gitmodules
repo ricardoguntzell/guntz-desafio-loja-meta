@@ -1,0 +1,6 @@
+[submodule "microservices/order-receive"]
+	path = microservices/order-receive
+	url = https://github.com/ricardoguntzell/guntz-desafio-loja-order-receive.git
+[submodule "microservices/order-processor"]
+	path = microservices/order-processor
+	url = https://github.com/ricardoguntzell/guntz-desafio-loja-order-processor.git
