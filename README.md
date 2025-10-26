@@ -33,7 +33,7 @@ Este repositório é um monorepo que contém os seguintes microsserviços:
 
 ### 2. `order-processor`
 
-*   **Responsabilidade**: Consumir os pedidos da fila, aplicar regras de negócio, calcular totais e salvar o pedido final no banco de dados.
+*   **Responsabilidade**: Consumir os pedidos da fila, aplicar regras de negócio, calcular totais, salvar o pedido final no banco de dados e expor uma API para consulta dos dados processados.
 *   **Tecnologias**: Spring Boot, Spring Data JPA, Spring for RabbitMQ, H2 Database.
 *   **Porta**: `8081`
 *   **Repositório**: guntz-desafio-loja-order-processor
