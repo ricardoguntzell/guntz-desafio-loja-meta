@@ -1,0 +1,23 @@
+# Arquivo: prometheus.yml
+global:
+  scrape_interval: 10s # Intervalo de coleta
+  external_labels:
+    monitor: 'order-monitoring'
+
+scrape_configs:
+  # Job para monitorar o Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Job 1: order-receive (MS-1)
+  - job_name: 'order-receive'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+
+  # Job 2: order-processor (MS-2)
+  - job_name: 'order-processor'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8081']

@@ -1,17 +1,68 @@
 version: "3.7"
+
 services:
+  # ----------------------------------------------------
+  # 1. RabbitMQ Service
+  # ----------------------------------------------------
   guntz-desafio-order-rabbitmq:
     container_name: guntz-desafio-order-rabbitmq
     image: rabbitmq:3-management
-    restart: "no"
+    restart: always
     ports:
       - 5672:5672
-      - 15672:15672
+      - 15672:15672 # Porta para o Management Plugin
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
       - guntz-desafio-order-rabbitmq:/var/lib/rabbitmq/
       - ./configs/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+    networks:
+      - monitoring_network
+
+  # ----------------------------------------------------
+  # 2. Prometheus Service (Com Mapeamento Dinâmico para WSL2/Host)
+  # ----------------------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090" # Porta de acesso ao Prometheus UI
+    volumes:
+      # MAPEAMENTO: O Prometheus lerá a configuração do seu arquivo local
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitoring_network
+
+    # === SOLUÇÃO DINÂMICA PARA WSL2/LINUX ===
+    # Isso permite que 'host.docker.internal' no prometheus.yml funcione
+    # sem a necessidade de IPs fixos (como host.docker.internal falha no Linux/WSL2 padrão)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # ======================================
+
+  # ----------------------------------------------------
+  # 3. Grafana Service (Visualização)
+  # ----------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000" # Porta de acesso ao Grafana UI
+    environment:
+      # Credenciais padrões de acesso
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - monitoring_network
+    depends_on:
+      - prometheus
+
 volumes:
   guntz-desafio-order-rabbitmq:
+
+networks:
+  monitoring_network:
+    driver: bridge
